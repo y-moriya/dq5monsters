@@ -26,6 +26,7 @@ class GridPage extends HookConsumerWidget {
 
     int count = monsters.where((m) => m.isChecked).toList().length;
     String title = '現在 $count / 70 残り' + (70 - count).toString() + '体';
+    double extent = ref.watch(_showNameProvider.notifier).state ? 1.5 : 1.2;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +45,7 @@ class GridPage extends HookConsumerWidget {
               child: CustomScrollView(slivers: <Widget>[
                 SliverGrid(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: ref.watch(_imageSizeProvider) * 1.5,
+                    maxCrossAxisExtent: ref.watch(_imageSizeProvider) * extent,
                     mainAxisSpacing: 2.0,
                     crossAxisSpacing: 2.0,
                     childAspectRatio: 1.0,
@@ -102,7 +103,7 @@ class GridPage extends HookConsumerWidget {
                             Text('サイズ変更'),
                             Slider(
                               min: 25,
-                              max: 150,
+                              max: 300,
                               value: ref.watch(_imageSizeProvider),
                               onChanged: (value) => ref
                                   .read(_imageSizeProvider.notifier)

@@ -85,13 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // axis because Columns are vertical (the cross axis would be
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
-              'image:',
-            ),
-            Image(
-              image: AssetImage('resource/01.png'),
-              width: 64,
+          children: <Widget>[
+            Container(
+              child: GridPage(),
             ),
           ],
         ),

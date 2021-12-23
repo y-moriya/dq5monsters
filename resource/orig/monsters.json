@@ -3,7 +3,7 @@
     "id": "01",
     "name": "ベビーパンサー",
     "name_en": "sabrecub",
-    "probability": "-",
+    "probability": "1/1",
     "rank": 8,
     "isChecked": false,
     "time": ""
@@ -12,7 +12,7 @@
     "id": "02",
     "name": "キラーパンサー",
     "name_en": "sabrecat",
-    "probability": "-",
+    "probability": "1/1",
     "rank": 8,
     "isChecked": false,
     "time": ""
@@ -21,7 +21,7 @@
     "id": "03",
     "name": "ザイル",
     "name_en": "zaile",
-    "probability": "-",
+    "probability": "1/1",
     "rank": 8,
     "isChecked": false,
     "time": ""
@@ -30,7 +30,7 @@
     "id": "04",
     "name": "プチターク",
     "name_en": "starkers",
-    "probability": "-",
+    "probability": "1/1",
     "rank": 8,
     "isChecked": false,
     "time": ""
@@ -39,7 +39,7 @@
     "id": "05",
     "name": "プオーン",
     "name_en": "rebjorn",
-    "probability": "-",
+    "probability": "1/1",
     "rank": 8,
     "isChecked": false,
     "time": ""

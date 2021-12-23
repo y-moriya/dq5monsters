@@ -17,69 +17,86 @@ class GridPage extends HookConsumerWidget {
     }
 
     return Scaffold(
-      body: CustomScrollView(slivers: <Widget>[
-        SliverGrid(
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 150.0,
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
-            childAspectRatio: 1.0,
-          ),
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) {
-              if ((monsters[index]).isChecked) {
-                return Container(
-                  child: Stack(children: <Widget>[
-                    ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                          Colors.grey, BlendMode.modulate),
-                      child: Image(
-                        image: AssetImage((monsters[index]).getImagePath()),
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
-                    const Align(
-                      alignment: Alignment(0.8, -0.8),
-                      child: Icon(Icons.check_circle_outline,
-                          color: Colors.green, size: 64),
-                    ),
+      appBar: AppBar(title: Text('DQ5 仲間コンプチェックリスト')),
+      body: Scrollbar(
+        child: ScrollConfiguration(
+            behavior:
+                ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+              child: CustomScrollView(slivers: <Widget>[
+                SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 150.0,
+                    mainAxisSpacing: 10.0,
+                    crossAxisSpacing: 10.0,
+                    childAspectRatio: 1.0,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      final monster = monsters[index];
+                      if ((monster).isChecked) {
+                        return _getCheckedMonsterTile(monster);
+                      } else {
+                        return InkWell(
+                          onTap: () => ref
+                              .read(monsterViewController)
+                              .checkMonster(monster.id),
+                          child: _getMonsterTile(monster),
+                        );
+                      }
+                    },
+                    childCount: monsters.length,
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    Column(
+                      children: <Widget>[
+                        Text('test'),
+                      ],
+                    )
                   ]),
-                );
-                // return Container(
-                //   child: ColorFiltered(
-                //     colorFilter:
-                //         const ColorFilter.mode(Colors.grey, BlendMode.modulate),
-                //     child: Image(
-                //       image: AssetImage((monsters[index]).getImagePath()),
-                //       fit: BoxFit.fitWidth,
-                //     ),
-                //   ),
-                // );
-              } else {
-                return Container(
-                  child: Stack(children: <Widget>[
-                    Image(
-                      image: AssetImage((monsters[index]).getImagePath()),
-                      fit: BoxFit.fitWidth,
-                    ),
-                    Align(
-                      alignment: Alignment(0.0, 1.0),
-                      child: Text('スライムベホマズン', style: TextStyle(fontSize: 12)),
-                    ),
-                  ]),
-                );
-                // return Container(
-                //   child: Image(
-                //     image: AssetImage((monsters[index]).getImagePath()),
-                //     fit: BoxFit.fitWidth,
-                //   ),
-                // );
-              }
-            },
-            childCount: monsters.length,
-          ),
-        ),
-      ]),
+                )
+              ]),
+            )),
+      ),
     );
   }
+}
+
+Widget _getMonsterTile(Monster monster) {
+  return Container(
+    child: Stack(children: <Widget>[
+      Image(
+        image: AssetImage(monster.getImagePath()),
+        height: 100,
+        width: 100,
+      ),
+      Align(
+        alignment: Alignment(0.0, 1.0),
+        child: Text(monster.getDisplayName(), style: TextStyle(fontSize: 12)),
+      ),
+    ]),
+  );
+}
+
+Widget _getCheckedMonsterTile(Monster monster) {
+  return Container(
+    child: Stack(children: <Widget>[
+      ColorFiltered(
+        colorFilter:
+            const ColorFilter.mode(Colors.blueGrey, BlendMode.modulate),
+        child: Image(
+          image: AssetImage(monster.getImagePath()),
+          height: 100,
+          width: 100,
+        ),
+      ),
+      Align(
+        alignment: Alignment(0.0, 1.0),
+        child: Text(monster.getDisplayName(), style: TextStyle(fontSize: 12)),
+      ),
+    ]),
+  );
 }

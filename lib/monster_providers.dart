@@ -5,6 +5,13 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 final _monsterState = StateProvider<List<Monster>?>((ref) => null);
 final sortedMonsterState = StateProvider<List<Monster>?>((ref) {
   final List<Monster>? monsters = ref.watch(_monsterState);
+  if (monsters != null) {
+    monsters.sort((a, b) {
+      int cmp = b.rank.compareTo(a.rank);
+      if (cmp != 0) return cmp;
+      return a.id.compareTo(b.id);
+    });
+  }
 
   return monsters;
 });
@@ -33,8 +40,13 @@ class MonsterViewController {
         if (m.id == id) {
           m.isChecked = true;
           m.time = now.toString();
+          break;
         }
       }
+    }
+    if (monsters != null) {
+      _read(_monsterState.notifier).state = monsters;
+      await _read(monsterRepository).writeEntries(monsters);
     }
   }
 }

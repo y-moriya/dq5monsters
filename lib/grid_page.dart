@@ -1,8 +1,12 @@
+import 'package:dq5monsters/image_size.dart';
 import 'package:dq5monsters/monster.dart';
 import 'package:dq5monsters/monster_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+
+final _imageSizeProvider =
+    StateNotifierProvider<ImageSize, double>((ref) => ImageSize());
 
 class GridPage extends HookConsumerWidget {
   @override
@@ -16,18 +20,24 @@ class GridPage extends HookConsumerWidget {
       return Container(child: const Center(child: CircularProgressIndicator()));
     }
 
+    int count = monsters.where((m) => m.isChecked).toList().length;
+    String title = '現在 $count / 70 残り' + (70 - count).toString() + '体';
+
     return Scaffold(
-      appBar: AppBar(title: Text('DQ5 仲間コンプチェックリスト')),
+      appBar: AppBar(
+        title: Text(title),
+        centerTitle: true,
+      ),
       body: Scrollbar(
         child: ScrollConfiguration(
             behavior:
                 ScrollConfiguration.of(context).copyWith(scrollbars: false),
             child: Padding(
-              padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+              padding: EdgeInsets.fromLTRB(50, 50, 50, 50),
               child: CustomScrollView(slivers: <Widget>[
                 SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 150.0,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: ref.watch(_imageSizeProvider) * 1.5,
                     mainAxisSpacing: 10.0,
                     crossAxisSpacing: 10.0,
                     childAspectRatio: 1.0,
@@ -36,13 +46,15 @@ class GridPage extends HookConsumerWidget {
                     (BuildContext context, int index) {
                       final monster = monsters[index];
                       if ((monster).isChecked) {
-                        return _getCheckedMonsterTile(monster);
+                        return _getCheckedMonsterTile(
+                            monster, ref.watch(_imageSizeProvider));
                       } else {
                         return InkWell(
                           onTap: () => ref
                               .read(monsterViewController)
                               .checkMonster(monster.id),
-                          child: _getMonsterTile(monster),
+                          child: _getMonsterTile(
+                              monster, ref.watch(_imageSizeProvider)),
                         );
                       }
                     },
@@ -53,7 +65,22 @@ class GridPage extends HookConsumerWidget {
                   delegate: SliverChildListDelegate([
                     Column(
                       children: <Widget>[
-                        Text('test'),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          children: [
+                            Text('サイズ変更'),
+                            Slider(
+                              min: 25,
+                              max: 150,
+                              value: ref.watch(_imageSizeProvider),
+                              onChanged: (value) => ref
+                                  .read(_imageSizeProvider.notifier)
+                                  .changState(value),
+                            )
+                          ],
+                        ),
                       ],
                     )
                   ]),
@@ -65,13 +92,13 @@ class GridPage extends HookConsumerWidget {
   }
 }
 
-Widget _getMonsterTile(Monster monster) {
+Widget _getMonsterTile(Monster monster, double size) {
   return Container(
     child: Stack(children: <Widget>[
       Image(
         image: AssetImage(monster.getImagePath()),
-        height: 100,
-        width: 100,
+        height: size,
+        width: size,
       ),
       Align(
         alignment: Alignment(0.0, 1.0),
@@ -81,7 +108,7 @@ Widget _getMonsterTile(Monster monster) {
   );
 }
 
-Widget _getCheckedMonsterTile(Monster monster) {
+Widget _getCheckedMonsterTile(Monster monster, double size) {
   return Container(
     child: Stack(children: <Widget>[
       ColorFiltered(
@@ -89,8 +116,8 @@ Widget _getCheckedMonsterTile(Monster monster) {
             const ColorFilter.mode(Colors.blueGrey, BlendMode.modulate),
         child: Image(
           image: AssetImage(monster.getImagePath()),
-          height: 100,
-          width: 100,
+          height: size,
+          width: size,
         ),
       ),
       Align(

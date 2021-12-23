@@ -37,7 +37,7 @@ class GridPage extends HookConsumerWidget {
             behavior:
                 ScrollConfiguration.of(context).copyWith(scrollbars: false),
             child: Padding(
-              padding: EdgeInsets.fromLTRB(50, 50, 50, 50),
+              padding: EdgeInsets.fromLTRB(50, 10, 50, 50),
               child: CustomScrollView(slivers: <Widget>[
                 SliverGrid(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

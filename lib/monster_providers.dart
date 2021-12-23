@@ -49,4 +49,27 @@ class MonsterViewController {
       await _read(monsterRepository).writeEntries(monsters);
     }
   }
+
+  Future<void> unCheckMonster(String id) async {
+    final monsters = _read(_monsterState)?.toList();
+    if (monsters != null) {
+      for (var m in monsters) {
+        if (m.id == id) {
+          m.isChecked = false;
+          m.time = "";
+          break;
+        }
+      }
+    }
+    if (monsters != null) {
+      _read(_monsterState.notifier).state = monsters;
+      await _read(monsterRepository).writeEntries(monsters);
+    }
+  }
+
+  Future<void> reset() async {
+    _read(monsterRepository).reset();
+    _read(_monsterState.notifier).state =
+        await _read(monsterRepository).readEntries();
+  }
 }

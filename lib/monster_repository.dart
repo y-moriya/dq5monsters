@@ -19,7 +19,11 @@ class MonsterRepository {
   }
 
   bool isInitial() {
-    return _localStorage['monsters'] == null;
+    return _localStorage['monsters'] == null || _localStorage['monsters'] == "";
+  }
+
+  void reset() {
+    _localStorage['monsters'] = "";
   }
 
   Future<List<Monster>> readEntries() async {

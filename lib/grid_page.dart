@@ -1,12 +1,16 @@
 import 'package:dq5monsters/image_size.dart';
 import 'package:dq5monsters/monster.dart';
 import 'package:dq5monsters/monster_providers.dart';
+import 'package:dq5monsters/show_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final _imageSizeProvider =
     StateNotifierProvider<ImageSize, double>((ref) => ImageSize());
+
+final _showNameProvider =
+    StateNotifierProvider<ShowName, bool>((ref) => ShowName());
 
 class GridPage extends HookConsumerWidget {
   @override
@@ -38,23 +42,32 @@ class GridPage extends HookConsumerWidget {
                 SliverGrid(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: ref.watch(_imageSizeProvider) * 1.5,
-                    mainAxisSpacing: 10.0,
-                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 2.0,
+                    crossAxisSpacing: 2.0,
                     childAspectRatio: 1.0,
                   ),
                   delegate: SliverChildBuilderDelegate(
                     (BuildContext context, int index) {
                       final monster = monsters[index];
                       if ((monster).isChecked) {
-                        return _getCheckedMonsterTile(
-                            monster, ref.watch(_imageSizeProvider));
+                        return InkWell(
+                          onTap: () => ref
+                              .read(monsterViewController)
+                              .unCheckMonster(monster.id),
+                          child: _getCheckedMonsterTile(
+                              monster,
+                              ref.watch(_imageSizeProvider),
+                              ref.watch(_showNameProvider)),
+                        );
                       } else {
                         return InkWell(
                           onTap: () => ref
                               .read(monsterViewController)
                               .checkMonster(monster.id),
                           child: _getMonsterTile(
-                              monster, ref.watch(_imageSizeProvider)),
+                              monster,
+                              ref.watch(_imageSizeProvider),
+                              ref.watch(_showNameProvider)),
                         );
                       }
                     },
@@ -65,7 +78,20 @@ class GridPage extends HookConsumerWidget {
                   delegate: SliverChildListDelegate([
                     Column(
                       children: <Widget>[
-                        SizedBox(
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Row(
+                          children: [
+                            Text('名前表示'),
+                            Checkbox(
+                                value: ref.watch(_showNameProvider),
+                                onChanged: (value) => ref
+                                    .read(_showNameProvider.notifier)
+                                    .changState(value))
+                          ],
+                        ),
+                        const SizedBox(
                           height: 30,
                         ),
                         Row(
@@ -81,6 +107,17 @@ class GridPage extends HookConsumerWidget {
                             )
                           ],
                         ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: MaterialButton(
+                              onPressed: () => _showAlertDialog(context, ref),
+                              child: const Text('リセット'),
+                              color: Colors.red,
+                              textColor: Colors.white),
+                        ),
                       ],
                     )
                   ]),
@@ -92,7 +129,37 @@ class GridPage extends HookConsumerWidget {
   }
 }
 
-Widget _getMonsterTile(Monster monster, double size) {
+void _showAlertDialog(BuildContext context, WidgetRef ref) {
+  showDialog(
+    context: context,
+    builder: (_) {
+      final String message = "データを全て消去してリセットします\n\n"
+          "よろしいですか？";
+      return AlertDialog(
+        title: const Text('リセット'),
+        scrollable: true,
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: const Text('キャンセル'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              ref.read(monsterViewController).reset();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Widget _getMonsterTile(Monster monster, double size, bool showName) {
   return Container(
     child: Stack(children: <Widget>[
       Image(
@@ -100,15 +167,18 @@ Widget _getMonsterTile(Monster monster, double size) {
         height: size,
         width: size,
       ),
-      Align(
-        alignment: Alignment(0.0, 1.0),
-        child: Text(monster.getDisplayName(), style: TextStyle(fontSize: 12)),
-      ),
+      showName
+          ? Align(
+              alignment: Alignment(0.0, 1.0),
+              child: Text(monster.getDisplayName(),
+                  style: TextStyle(fontSize: 12)),
+            )
+          : Container(),
     ]),
   );
 }
 
-Widget _getCheckedMonsterTile(Monster monster, double size) {
+Widget _getCheckedMonsterTile(Monster monster, double size, bool showName) {
   return Container(
     child: Stack(children: <Widget>[
       ColorFiltered(
@@ -120,10 +190,18 @@ Widget _getCheckedMonsterTile(Monster monster, double size) {
           width: size,
         ),
       ),
-      Align(
-        alignment: Alignment(0.0, 1.0),
-        child: Text(monster.getDisplayName(), style: TextStyle(fontSize: 12)),
+      Image(
+        image: AssetImage('resource/sumi.png'),
+        height: size,
+        width: size,
       ),
+      showName
+          ? Align(
+              alignment: Alignment(0.0, 1.0),
+              child: Text(monster.getDisplayName(),
+                  style: TextStyle(fontSize: 12)),
+            )
+          : Container(),
     ]),
   );
 }

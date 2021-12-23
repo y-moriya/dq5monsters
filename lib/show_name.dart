@@ -1,6 +1,6 @@
 import 'package:riverpod/riverpod.dart';
 
-class ImageSize extends StateNotifier<double> {
-  ImageSize() : super(100.0);
+class ShowName extends StateNotifier<bool> {
+  ShowName() : super(false);
   void changState(newState) => state = newState;
 }

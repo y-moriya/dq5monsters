@@ -29,7 +29,10 @@ class GridPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 48),
+        ),
         centerTitle: true,
       ),
       body: Scrollbar(
